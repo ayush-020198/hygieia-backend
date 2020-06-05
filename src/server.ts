@@ -1,6 +1,6 @@
 const a = {
   name: 'Prem',
-  age: 21,
+  age: 20,
   city: 'Bikaner',
 };
 console.log(a.age);
