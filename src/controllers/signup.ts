@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Db } from 'mongodb';
+import bcrypt from 'bcrypt';
 import { DBUser } from '../models';
+import { validationResult, Result, ValidationError } from 'express-validator';
 
 interface SignupRequest {
   name: string;
@@ -10,6 +12,7 @@ interface SignupRequest {
 
 interface SignupRespose {
   error?: string;
+  errors?: Result<ValidationError>;
   message?: string;
 }
 
@@ -19,9 +22,11 @@ export const signup = async (
   db: Db
 ): Promise<void> => {
   try {
+    const errors = validationResult(req);
+
     const { name, email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required.' });
+    if (!errors.isEmpty()) {
+      res.status(400).json({ error: 'Request valiation failed.', errors });
       return;
     }
 
@@ -33,7 +38,9 @@ export const signup = async (
       return;
     }
 
-    await userCol.insertOne({ name, email, hash: password });
+    const hash = await bcrypt.hash(password, 10);
+
+    await userCol.insertOne({ name, email, hash });
     res.json({ message: 'Signup successful!' });
   } catch (err) {
     res.status(500).json({ error: 'Something went wrong. Please try again.' });

@@ -1,5 +1,6 @@
-import express, { Request } from 'express';
+import express, { Request, Response } from 'express';
 import { MongoClient } from 'mongodb';
+import { signupValidator } from './utils/validators';
 import config from './config';
 import { signup } from './controllers';
 
@@ -15,7 +16,7 @@ const main = async () => {
     res.send('pong');
   });
 
-  app.post('/api/signup', (req: Request<null>, res) => signup(req, res, db));
+  app.post('/api/signup', signupValidator, (req: Request<null>, res: Response) => signup(req, res, db));
 
   // app.get('/api/login', (req, res) => {});
 
