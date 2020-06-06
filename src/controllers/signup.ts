@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Db } from 'mongodb';
 import bcrypt from 'bcrypt';
 import { DBUser } from '../models';
-import { validationResult, Result, ValidationError } from 'express-validator';
+import { APIResponse } from '../interfaces';
 
 interface SignupRequest {
   name: string;
@@ -10,25 +10,15 @@ interface SignupRequest {
   password: string;
 }
 
-interface SignupRespose {
-  error?: string;
-  errors?: Result<ValidationError>;
-  message?: string;
-}
+type SignupResponse = APIResponse;
 
 export const signup = async (
-  req: Request<null, SignupRespose, SignupRequest>,
-  res: Response<SignupRespose>,
+  req: Request<null, SignupResponse, SignupRequest>,
+  res: Response<SignupResponse>,
   db: Db
 ): Promise<void> => {
   try {
-    const errors = validationResult(req);
-
     const { name, email, password } = req.body;
-    if (!errors.isEmpty()) {
-      res.status(400).json({ error: 'Request valiation failed.', errors });
-      return;
-    }
 
     const userCol = db.collection<DBUser>('users');
 

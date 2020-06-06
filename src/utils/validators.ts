@@ -4,3 +4,5 @@ export const signupValidator = [
   check('email').isEmail().normalizeEmail(),
   check('password').isLength({ min: 6 }),
 ];
+
+export const loginValidator = [check('email').isEmail().normalizeEmail(), check('password').isLength({ min: 6 })];

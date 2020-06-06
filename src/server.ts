@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express';
 import { MongoClient } from 'mongodb';
-import { signupValidator } from './utils/validators';
+import { signupValidator, loginValidator } from './utils/validators';
 import config from './config';
-import { signup } from './controllers';
+import { signup, login } from './controllers';
+import { withValidator } from './utils/middlewares';
 
 const app = express();
 app.use(express.json());
@@ -16,9 +17,9 @@ const main = async () => {
     res.send('pong');
   });
 
-  app.post('/api/signup', signupValidator, (req: Request<null>, res: Response) => signup(req, res, db));
+  app.post('/api/signup', signupValidator, withValidator, (req: Request<null>, res: Response) => signup(req, res, db));
 
-  // app.get('/api/login', (req, res) => {});
+  app.post('/api/login', loginValidator, withValidator, (req: Request<null>, res: Response) => login(req, res, db));
 
   app.listen(config.port, () => {
     console.log(`server running on ${config.port}`);
