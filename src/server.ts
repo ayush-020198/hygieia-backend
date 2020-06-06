@@ -1,17 +1,23 @@
-import express from 'express';
-import config from './config';
+import express, { Request } from 'express';
 import { MongoClient } from 'mongodb';
+import config from './config';
+import { signup } from './controllers';
 
 const app = express();
+app.use(express.json());
 
 const main = async () => {
   const client = new MongoClient(config.mongoURI, { useUnifiedTopology: true });
   await client.connect();
   const db = client.db(config.dbname);
 
-  app.get('/ping', (req, res) => {
+  app.get('/api/ping', (_req, res) => {
     res.send('pong');
   });
+
+  app.post('/api/signup', (req: Request<null>, res) => signup(req, res, db));
+
+  // app.get('/api/login', (req, res) => {});
 
   app.listen(config.port, () => {
     console.log(`server running on ${config.port}`);
