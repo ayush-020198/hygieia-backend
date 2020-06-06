@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
+import ms from 'ms';
 import { Db } from 'mongodb';
 import bcrypt from 'bcrypt';
 import { DBUser } from '../models';
 import { APIResponse } from '../interfaces';
+import { genToken } from '../utils/helpers';
 
 interface LoginRequest {
   email: string;
@@ -27,11 +29,17 @@ export const login = async (
     }
 
     const match = await bcrypt.compare(password, user.hash);
-
     if (!match) {
       res.status(401).json({ error: 'Invalid email or password.' });
       return;
     }
+
+    const [token, expiry] = genToken({ email });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: ms(expiry),
+    });
 
     res.json({ message: 'Login successful!' });
   } catch (err) {
