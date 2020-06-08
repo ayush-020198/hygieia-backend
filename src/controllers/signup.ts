@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Db } from 'mongodb';
 import bcrypt from 'bcrypt';
-import openpgp from 'openpgp';
+import * as openpgp from 'openpgp';
 import { DBUser } from '../models';
 import { APIResponse } from '../interfaces';
 

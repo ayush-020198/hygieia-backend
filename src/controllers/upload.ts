@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { Db, MongoClient, TransactionOptions } from 'mongodb';
-import openpgp from 'openpgp';
+import * as openpgp from 'openpgp';
 import IpfsHttpClient from 'ipfs-http-client';
 import { DBUser, DBReport } from '../models';
 import { APIResponse, AuthRequest } from '../interfaces';
