@@ -5,4 +5,9 @@ export interface DBUser {
   email: string;
   hash: string;
   reports: ObjectID[];
+  keys: {
+    privKey: string;
+    pubKey: string;
+    revoke: string;
+  };
 }

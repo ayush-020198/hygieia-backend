@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { Db, MongoClient, TransactionOptions } from 'mongodb';
+import openpgp from 'openpgp';
 import IpfsHttpClient from 'ipfs-http-client';
 import { DBUser, DBReport } from '../models';
 import { APIResponse, AuthRequest } from '../interfaces';
@@ -19,11 +20,18 @@ export const upload = async (
     const userCol = db.collection<DBUser>('users');
     const reportCol = db.collection<DBReport>('reports');
 
+    const user = await userCol.findOne({ email: req.email });
+
+    const { data: encrypted } = await openpgp.encrypt({
+      message: openpgp.message.fromBinary(new Uint8Array(req.file.buffer)),
+      publicKeys: (await openpgp.key.readArmored(user.keys.pubKey)).keys,
+    });
+
     let report: {
       path: string;
     };
 
-    for await (report of ipfs.add(req.file.buffer)) {
+    for await (report of ipfs.add(new Buffer(encrypted))) {
       console.log(`[upload] uploaded ${report.path} to IPFS`);
     }
 
@@ -37,7 +45,6 @@ export const upload = async (
 
     try {
       await session.withTransaction(async () => {
-        const user = await userCol.findOne({ email: req.email }, { session });
         const reportRes = await reportCol.insertOne(
           {
             cid: report.path,

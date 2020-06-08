@@ -30,6 +30,7 @@
     "@types/mongodb": "^3.5.20",
     "@types/ms": "^0.7.31",
     "@types/multer": "^1.4.3",
+    "@types/openpgp": "^4.4.12",
     "@typescript-eslint/eslint-plugin": "^3.1.0",
     "@typescript-eslint/parser": "^3.1.0",
     "concurrently": "^5.2.0",
@@ -53,6 +54,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.8",
     "ms": "^2.1.2",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "openpgp": "^4.10.4"
   }
 }
