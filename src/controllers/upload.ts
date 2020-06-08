@@ -42,7 +42,7 @@ export const upload = async (
           {
             cid: report.path,
             userID: user._id,
-            title: 'Default',
+            title: req.body.title,
           },
           { session }
         );

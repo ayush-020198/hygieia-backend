@@ -5,7 +5,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { signupValidator, loginValidator } from './utils/validators';
 import config from './config';
-import { signup, login, upload } from './controllers';
+import { signup, login, upload, reports } from './controllers';
 import { withValidator, withAuth } from './utils/middlewares';
 import { AuthRequest } from './interfaces';
 
@@ -37,6 +37,8 @@ const main = async () => {
   app.post('/api/upload', withAuth, withUpload.single('report'), (req: AuthRequest, res) =>
     upload(req, res, db, client)
   );
+
+  app.get('/api/reports', withAuth, (req: AuthRequest, res) => reports(req, res, db));
 
   app.listen(config.port, () => {
     console.log(`server running on ${config.port}`);
