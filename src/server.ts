@@ -2,11 +2,14 @@ import express, { Request, Response } from 'express';
 import { MongoClient } from 'mongodb';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import multer from 'multer';
 import { signupValidator, loginValidator } from './utils/validators';
 import config from './config';
-import { signup, login } from './controllers';
+import { signup, login, upload } from './controllers';
 import { withValidator, withAuth } from './utils/middlewares';
 import { AuthRequest } from './interfaces';
+
+const withUpload = multer();
 
 const app = express();
 app.use(express.json());
@@ -30,6 +33,10 @@ const main = async () => {
   app.post('/api/signup', signupValidator, withValidator, (req: Request<null>, res: Response) => signup(req, res, db));
 
   app.post('/api/login', loginValidator, withValidator, (req: Request<null>, res: Response) => login(req, res, db));
+
+  app.post('/api/upload', withAuth, withUpload.single('report'), (req: AuthRequest, res) =>
+    upload(req, res, db, client)
+  );
 
   app.listen(config.port, () => {
     console.log(`server running on ${config.port}`);

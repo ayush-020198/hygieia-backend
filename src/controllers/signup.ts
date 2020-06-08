@@ -30,7 +30,7 @@ export const signup = async (
 
     const hash = await bcrypt.hash(password, 10);
 
-    await userCol.insertOne({ name, email, hash });
+    await userCol.insertOne({ name, email, hash, reports: [] });
     res.json({ message: 'Signup successful!' });
   } catch (err) {
     res.status(500).json({ error: 'Something went wrong. Please try again.' });
