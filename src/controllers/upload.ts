@@ -50,6 +50,8 @@ export const upload = async (
             cid: report.path,
             userID: user._id,
             title: req.body.title,
+            name: req.file.originalname,
+            mime: req.file.mimetype,
           },
           { session }
         );

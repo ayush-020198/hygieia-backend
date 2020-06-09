@@ -5,7 +5,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { signupValidator, loginValidator } from './utils/validators';
 import config from './config';
-import { signup, login, upload, reports, logout } from './controllers';
+import { signup, login, upload, reports, logout, user } from './controllers';
 import { withValidator, withAuth } from './utils/middlewares';
 import { AuthRequest } from './interfaces';
 
@@ -29,6 +29,8 @@ const main = async () => {
   app.get('/api/ping', withAuth, (req: AuthRequest, res) => {
     res.json({ message: 'pong' });
   });
+
+  app.get('/api/user', withAuth, (req: AuthRequest, res) => user(req, res, db));
 
   app.post('/api/signup', signupValidator, withValidator, (req: Request<null>, res: Response) => signup(req, res, db));
 
