@@ -5,7 +5,7 @@ import cors from 'cors';
 import multer from 'multer';
 import { signupValidator, loginValidator } from './utils/validators';
 import config from './config';
-import { signup, login, upload, reports } from './controllers';
+import { signup, login, upload, reports, logout } from './controllers';
 import { withValidator, withAuth } from './utils/middlewares';
 import { AuthRequest } from './interfaces';
 
@@ -27,12 +27,14 @@ const main = async () => {
   const db = client.db(config.dbname);
 
   app.get('/api/ping', withAuth, (req: AuthRequest, res) => {
-    res.send('pong');
+    res.json({ message: 'pong' });
   });
 
   app.post('/api/signup', signupValidator, withValidator, (req: Request<null>, res: Response) => signup(req, res, db));
 
   app.post('/api/login', loginValidator, withValidator, (req: Request<null>, res: Response) => login(req, res, db));
+
+  app.get('/api/logout', logout);
 
   app.post('/api/upload', withAuth, withUpload.single('report'), (req: AuthRequest, res) =>
     upload(req, res, db, client)
