@@ -1,0 +1,33 @@
+name: Deploy on production server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          ref: master
+          fetch-depth: 1
+
+      - name: Setup .env file
+        env:
+          DOTENV: ${{ secrets.DOTENV }}
+        run: |
+          echo "$DOTENV" | base64 -d > ./.env
+      - name: Setup key
+        env:
+          ECD_KEY: ${{ secrets.ECD_KEY }}
+        run: |
+          echo "$ECD_KEY" | base64 -d > $HOME/ecd
+          chmod 400 $HOME/ecd
+      - name: Push the build to server
+        run: rsync -avz --delete --exclude 'node_modules' --exclude '.git*' -e "ssh -4 -i $HOME/ecd -o StrictHostKeyChecking=no" ./ ops@hygieia.sarswat.co:/var/www/back/
+
+      - name: install dependencies on remote server
+        run: ssh -4 -i $HOME/ecd -o StrictHostKeyChecking=no ops@hygieia.sarswat.co 'cd /var/www/back/ && yarn install && yarn build && pm2 restart back'
